@@ -18,6 +18,8 @@ namespace Ploeh.Samples.HelloDI.Console
 
         private static void EarlyBindingExample()
         {
+            // SecureMessageWriter 實作應用程式安全功能
+            // ConsoleMessageWriter 實作與使用者介面之間關聯
             IMessageWriter writer =
                 new SecureMessageWriter(
                     writer: new ConsoleMessageWriter(),
@@ -30,6 +32,7 @@ namespace Ploeh.Samples.HelloDI.Console
 
         private static void LateBindingExample()
         {
+            // read from appsettings.json file
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
@@ -38,6 +41,9 @@ namespace Ploeh.Samples.HelloDI.Console
             string typeName = configuration["messageWriter"];
             Type type = Type.GetType(typeName, throwOnError: true);
 
+            // SecureMessageWriter 實作應用程式安全功能，經過授權才能輸出
+            // LateBinding
+            //     ConsoleMessageWriter() => (IMessageWriter)Activator.CreateInstance(type)
             IMessageWriter writer =
                 new SecureMessageWriter(
                     writer: (IMessageWriter)Activator.CreateInstance(type),
